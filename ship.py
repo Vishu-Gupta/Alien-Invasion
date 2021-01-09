@@ -6,6 +6,7 @@ class Ship:
         """Initalize ship and its starting position"""
         self.screen = game.screen
         self.screen_rect = game.screen.get_rect()
+        self.settings = game.settings
         self.ship_height = 150
         self.ship_width = 90
         self.moving_right = False # Will move right when this flag is True
@@ -16,11 +17,16 @@ class Ship:
         self.rect = self.image.get_rect()
         self.rect.midbottom = self.screen_rect.midbottom # Align both the ships position with screend midbottom
 
+        self.x = float(self.rect.x) #store  decimal value for ships horizontal position
+
     def update(self):
-        if self.moving_right:
-            self.rect.x += 1
-        if self.moving_left:
-            self.rect.x -= 1    
+        if self.moving_right and self.rect.right < self.screen_rect.right:
+            self.x += self.settings.ship_speed
+        if self.moving_left and self.rect.left > self.screen_rect.left:
+            self.x -= self.settings.ship_speed 
+        
+        # moves ships position to new calculated positon
+        self.rect.x = self.x
     
     def blitme(self):
         """Draw the ship at its current location"""
