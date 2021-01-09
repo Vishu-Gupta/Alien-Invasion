@@ -4,6 +4,7 @@ import pygame
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
+from alien import Alien
 
 class AleinInvasion:
     """Overall class to manage game assets and behaviour"""
@@ -18,6 +19,9 @@ class AleinInvasion:
         pygame.display.set_caption("Alien Invasion")
         self.ship = Ship(self) #create a ship attribute for this instance and pass this instance to Ship class
         self.bullets = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
+
+        self._create_fleet()
 
     def run_game(self):
         #start the main loop for the game
@@ -63,6 +67,33 @@ class AleinInvasion:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
 
+    def _create_fleet(self):
+        """Create Alien fleet"""
+        alien = Alien(self)
+        alien_width, alien_height = alien.rect.size
+        ship_height = self.ship.rect.height
+        available_space_y = self.settings.screen_height - (3* alien_height ) - ship_height
+        number_rows = available_space_y // (2*alien_height)
+        available_space_x = self.settings.screen_width - ( 2 * alien_width)
+        number_aliens_x = available_space_x // (2*alien_width)
+        
+        #creat fleet
+        for row_no in range(number_rows):
+            for alien_number in range(number_aliens_x):
+                self._create_alien(alien_number, row_no)
+
+
+
+    def _create_alien(self, alien_number, row_no):
+        alien = Alien(self)
+        alien_width, alien_height = alien.rect.size
+        alien.x = alien_width + 2*alien_width*alien_number
+        alien.y = alien_height + 2* alien_height * row_no
+        alien.rect.y = alien.y
+        alien.rect.x = alien.x
+
+        self.aliens.add(alien)
+
 
     def _update_screen(self):
         """Updates display"""
@@ -70,6 +101,7 @@ class AleinInvasion:
         self.ship.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
+        self.aliens.draw(self.screen) # draws the whole group
         #make display visible
         pygame.display.flip()
 
