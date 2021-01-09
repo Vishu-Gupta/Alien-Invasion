@@ -3,6 +3,7 @@ import sys
 import pygame
 from settings import Settings
 from ship import Ship
+from bullet import Bullet
 
 class AleinInvasion:
     """Overall class to manage game assets and behaviour"""
@@ -15,7 +16,8 @@ class AleinInvasion:
         self.settings.screen_height = self.screen.get_rect().height
         self.settings.screen_width = self.screen.get_rect().width
         pygame.display.set_caption("Alien Invasion")
-        self.ship = Ship(self) #create a ship attribute for this instance and pass this instance to Ship class 
+        self.ship = Ship(self) #create a ship attribute for this instance and pass this instance to Ship class
+        self.bullets = pygame.sprite.Group()
 
     def run_game(self):
         #start the main loop for the game
@@ -40,6 +42,8 @@ class AleinInvasion:
             self.ship.moving_right = True # move the ship right by 1 position
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = True
+        elif event.key == pygame.K_SPACE:
+            self.fire_bullet()
         elif event.key == pygame.K_q:
             sys.exit()
 
@@ -53,9 +57,19 @@ class AleinInvasion:
         """Updates display"""
         self.screen.fill(self.settings.screen_bg_color)
         self.ship.blitme()
+        for bullet in self.bullets.sprites():
+            bullet.draw_bullet()
+        #update ships,bullets etc
         self.ship.update()
+        self.bullets.update()
         #make display visible
         pygame.display.flip()
+
+    def fire_bullet(self):
+        """Create a new bullet and add it to the current bullet group"""
+        new_bullet = Bullet(self)
+        self.bullets.add(new_bullet)
+
 
 
 if __name__ == "__main__":
