@@ -1,3 +1,4 @@
+"""Module that manages all Gamestats"""
 class GameStats:
     """ Track statistics for Alien Invasion """
 
@@ -5,7 +6,10 @@ class GameStats:
         """ Initialize statistics"""
         self.settings = game.settings
         self.reset_stats()
-        self.game_active = True # flag to monitor if game is active or not
+        self.score = 0
+        self.high_score = 0
+        self.level = 1
+        self.game_active = False # flag to monitor if game is active or not
 
     def reset_stats(self):
         """"Initialize stats that can change during the game"""

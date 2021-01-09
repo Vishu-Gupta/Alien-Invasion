@@ -1,3 +1,4 @@
+"""Module for all details related to Bullet"""
 import pygame
 from pygame.sprite import Sprite
 
@@ -24,4 +25,4 @@ class Bullet(Sprite):
         
     def draw_bullet(self):
         """ Draw the bullet as per settings"""
-        pygame.draw.rect(self.screen,self.color,self.rect)
+        pygame.draw.rect(self.screen, self.color, self.rect)
