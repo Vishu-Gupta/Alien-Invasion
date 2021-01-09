@@ -1,10 +1,12 @@
 """Main File for Alien Invasion project"""
 import sys
+from time import sleep
 import pygame
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
+from game_stats import GameStats
 
 class AleinInvasion:
     """Overall class to manage game assets and behaviour"""
@@ -20,8 +22,8 @@ class AleinInvasion:
         self.ship = Ship(self) #create a ship attribute for this instance and pass this instance to Ship class
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
-
         self._create_fleet()
+        self.stats = GameStats(self) # instance to store game statistics
 
     def run_game(self):
         #start the main loop for the game
@@ -105,10 +107,27 @@ class AleinInvasion:
 
         self.aliens.add(alien)
 
+    def _ship_hit(self):
+        """Respond to ship getting hit by an alien"""
+        self.stats.ships_left -=1 # reduce ships left by 1
+        self.aliens.empty()
+        self.bullets.empty()
+        #create new fleet and ship
+        self._create_fleet()
+        self.ship.center_ship()
+        # Pause
+        sleep(0.5)
+
+
+
     def _update_aliens(self):
         """Update position of all aliens"""
         self._check_fleet_edges()
         self.aliens.update()
+
+        # Look for alien-ship collisions
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            self._ship_hit()
 
 
     def _update_screen(self):
