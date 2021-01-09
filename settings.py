@@ -16,4 +16,7 @@ class Settings:
         self.bullets_allowed = 3
         #alien settings
         self.alien_width = 100
-        self.alien_height= 80
+        self.alien_height = 80
+        self.alien_speed = 1.0
+        self.fleet_drop_speed = 10.0
+        self.fleet_direction = 1 # 1 indicates right, -1 indicates left

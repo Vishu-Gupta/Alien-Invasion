@@ -30,6 +30,7 @@ class AleinInvasion:
             #update ships,bullets etc
             self.ship.update()
             self._update_bullets()
+            self._update_aliens()
             self._update_screen()
 
 
@@ -66,6 +67,16 @@ class AleinInvasion:
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
+        #Check for any bullets that have hit aliens
+        self._check_bullet_alien_collisions()
+
+    def _check_bullet_alien_collisions(self):
+        """Respond to bullet -alien collision."""
+        collisions = pygame.sprite.groupcollide(self.bullets, self.aliens , True, True) # kills colliding objects
+        if not self.aliens:
+            #destroy bullets and create new fleet
+            self.bullets.empty()
+            self._create_fleet()
 
     def _create_fleet(self):
         """Create Alien fleet"""
@@ -94,6 +105,11 @@ class AleinInvasion:
 
         self.aliens.add(alien)
 
+    def _update_aliens(self):
+        """Update position of all aliens"""
+        self._check_fleet_edges()
+        self.aliens.update()
+
 
     def _update_screen(self):
         """Updates display"""
@@ -111,7 +127,17 @@ class AleinInvasion:
             new_bullet = Bullet(self)
             self.bullets.add(new_bullet)
 
+    def _check_fleet_edges(self):
+        for alien in self.aliens.sprites(): # why use .sprites()
+            if alien.check_edges():
+                self._change_fleet_direction()
+                break
 
+    def _change_fleet_direction(self):
+        """ Drop the entire fleet and change the fleets direction"""
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.settings.fleet_drop_speed
+        self.settings.fleet_direction *= -1 # reverse direction
 
 if __name__ == "__main__":
     ai = AleinInvasion()
