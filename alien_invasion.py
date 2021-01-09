@@ -23,6 +23,9 @@ class AleinInvasion:
         #start the main loop for the game
         while True:
             self._check_events()
+            #update ships,bullets etc
+            self.ship.update()
+            self._update_bullets()
             self._update_screen()
 
 
@@ -53,22 +56,28 @@ class AleinInvasion:
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = False
 
+    def _update_bullets(self):
+        self.bullets.update()
+        # delete bullets that leave the screen
+        for bullet in self.bullets.copy():
+            if bullet.rect.bottom <= 0:
+                self.bullets.remove(bullet)
+
+
     def _update_screen(self):
         """Updates display"""
         self.screen.fill(self.settings.screen_bg_color)
         self.ship.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
-        #update ships,bullets etc
-        self.ship.update()
-        self.bullets.update()
         #make display visible
         pygame.display.flip()
 
     def fire_bullet(self):
         """Create a new bullet and add it to the current bullet group"""
-        new_bullet = Bullet(self)
-        self.bullets.add(new_bullet)
+        if len(self.bullets) < self.settings.bullets_allowed:
+            new_bullet = Bullet(self)
+            self.bullets.add(new_bullet)
 
 
 
