@@ -30,9 +30,10 @@ class AleinInvasion:
         while True:
             self._check_events()
             #update ships,bullets etc
-            self.ship.update()
-            self._update_bullets()
-            self._update_aliens()
+            if self.stats.game_active: 
+                self.ship.update()
+                self._update_bullets()
+                self._update_aliens()
             self._update_screen()
 
 
@@ -80,6 +81,15 @@ class AleinInvasion:
             self.bullets.empty()
             self._create_fleet()
 
+    def _check_aleins_bottom(self):
+        """Check if any alien reached bottom"""
+        screen_rect = self.screen.get_rect()
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= screen_rect.bottom:
+                #treat similar to ship gets hit
+                self._ship_hit()
+                break
+
     def _create_fleet(self):
         """Create Alien fleet"""
         alien = Alien(self)
@@ -109,14 +119,17 @@ class AleinInvasion:
 
     def _ship_hit(self):
         """Respond to ship getting hit by an alien"""
-        self.stats.ships_left -=1 # reduce ships left by 1
-        self.aliens.empty()
-        self.bullets.empty()
-        #create new fleet and ship
-        self._create_fleet()
-        self.ship.center_ship()
-        # Pause
-        sleep(0.5)
+        if self.stats.ships_left > 0 :
+            self.stats.ships_left -=1 # reduce ships left by 1
+            self.aliens.empty()
+            self.bullets.empty()
+            #create new fleet and ship
+            self._create_fleet()
+            self.ship.center_ship()
+            # Pause
+            sleep(0.5)
+        else :
+            self.stats.game_active = False
 
 
 
@@ -128,7 +141,7 @@ class AleinInvasion:
         # Look for alien-ship collisions
         if pygame.sprite.spritecollideany(self.ship, self.aliens):
             self._ship_hit()
-
+        self._check_aleins_bottom()
 
     def _update_screen(self):
         """Updates display"""
